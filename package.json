@@ -1,0 +1,41 @@
+{
+  "name": "react-profile",
+  "version": "0.3.5",
+  "description": "Image Profile Editor",
+  "repository": "",
+  "author": "Marcos Fuenmayor",
+  "license": "Apache-2.0 license",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "jsdom"
+  },
+  "devDependencies": {
+    "@babel/register": "^7.22.5",
+    "@testing-library/jest-dom": "^6.1.2",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/react-hooks": "^8.0.1",
+    "@types/jest": "^29.5.4",
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
+    "jest": "^29.6.4",
+    "jest-environment-jsdom": "^29.6.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-dom": "*"
+  },
+  "dependencies": {
+    "react-image-crop": "^10.1.5",
+    "react-pixels": "^0.3.1"
+  }
+}

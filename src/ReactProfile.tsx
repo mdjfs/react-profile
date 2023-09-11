@@ -10,7 +10,6 @@ const language = 'en';
 const INIT_STATE: Change = {
   brightness: 0,
   contrast: 0,
-  hue: 0,
   saturation: 0,
   verticalFlip: false,
   horizontalFlip: false,
@@ -27,11 +26,28 @@ const INIT_CROP: Crop = {
   y: 25
 }
 
+const MAX_IMAGE_WIDTH = 1000;
+const MAX_IMAGE_HEIGHT = 1000;
+const DEFAULT_OPTIMIZE = 0.8;
+const MAX_IMAGE_SIZE = 1024 * 1024 * 3; // 3MB
+
 const LAST_CHANGE_DELAY_MS = 1000;
 
 const DEFAULT_FILTERS_ENABLED: FILTERS[] = ["vintage", "perfume", "sunset", "wood", "greyscale", "coral", "lemon", "haze", "radio", "grime", "red_effect", "rgbSplit"]
 
-const ReactProfile: React.FC<ReactProfileProps> = ({ src, initCrop, cropOptions, experimental, square, filtersEnabled = DEFAULT_FILTERS_ENABLED, onCancel, onDone }) => {
+const ReactProfile: React.FC<ReactProfileProps> = ({ 
+  src, 
+  initCrop, 
+  cropOptions,
+  square, 
+  filtersEnabled = DEFAULT_FILTERS_ENABLED, 
+  onCancel, 
+  onDone,
+  maxWidth = MAX_IMAGE_WIDTH,
+  maxHeight = MAX_IMAGE_HEIGHT,
+  maxImageSize = MAX_IMAGE_SIZE,
+  quality = DEFAULT_OPTIMIZE
+ }) => {
 
   INIT_STATE.crop = initCrop || INIT_CROP;
   cropOptions = square ? {...cropOptions, aspect: 1} as ReactCropProps : cropOptions
@@ -65,7 +81,6 @@ const ReactProfile: React.FC<ReactProfileProps> = ({ src, initCrop, cropOptions,
   }
   const setFilter = (filter: string | undefined) => pushHistory({ filter })
   const setBrightness = (brightness: number) => pushHistory({ brightness })
-  const setHue = (hue: number) => pushHistory({ hue })
   const setContrast = (contrast: number) => pushHistory({ contrast })
   const setSaturation = (saturation: number) => pushHistory({ saturation })
   const setVerticalFlip = (verticalFlip: boolean) => pushHistory({ verticalFlip })
@@ -114,14 +129,52 @@ const ReactProfile: React.FC<ReactProfileProps> = ({ src, initCrop, cropOptions,
 
   useEffect(() => {
     if(src) {
+      const png = src.includes("png");
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+      if(!context) throw new Error('ReactProfile: Error obtaining context');
       const image = new Image();
+      image.crossOrigin = "anonymous"
       image.src = src;
-      image.onload = () => setImg(image);
+      image.onerror = () => console.error('ReactProfile: Error fetching image')
+      image.onload = () => {
+        let loadWidth = image.width;
+        let loadHeight = image.height;
+        const aspect = image.width / image.height;
+        if(loadWidth > maxWidth) {
+          loadWidth = maxWidth;
+          loadHeight = loadWidth / aspect;
+        }
+        if(loadHeight > maxHeight) {
+          loadHeight = maxHeight;
+          loadWidth = loadHeight * aspect;
+        }
+        canvas.width = loadWidth;
+        canvas.height = loadHeight;
+        context.drawImage(image, 0, 0, loadWidth, loadHeight);
+        canvas.toBlob((blob) => {
+          if(!blob) return console.error('ReactProfile: Error loading image')
+          const pixelImage = new Image();
+          pixelImage.src = URL.createObjectURL(blob);
+          pixelImage.onload = () => setImg(pixelImage)
+          pixelImage.onerror = () => console.error('ReactProfile: Error loading image')
+        }, png ? 'image/png' : 'image/jpeg', quality)
+      }
     }
   }, [src])
 
   useEffect(() => {
-    if(img) getImageSource(img).then(setSource)
+    if(img) getImageSource(img).then((source) => {
+      if(source.data.data.byteLength >= maxImageSize) {
+        const toMB = (len: number) => (len / (1024*1024)).toFixed(2)
+        const err = `ReactProfile: Max Image Size Supported (>${toMB(maxImageSize)} MB). Image size: (${toMB(source.data.data.byteLength)} MB).`;
+        console.error(err)
+        console.warn('ReactProfile: You can modify the maximum size with the \'maxImageSize\' property, but be careful. Very large images can lead to errors or overloads.')
+        throw new Error(err)
+      } else {
+        setSource(source);
+      }
+    })
   }, [img]);
 
   const IMAGE = useMemo(() => (
@@ -135,7 +188,7 @@ const ReactProfile: React.FC<ReactProfileProps> = ({ src, initCrop, cropOptions,
       className="rp-image-preview" 
       onFilter={setExportObject}
     />
-  ), [edit.horizontalFlip, edit.verticalFlip, edit.filter, edit.hue, edit.contrast, edit.brightness, edit.saturation, source])
+  ), [edit.horizontalFlip, edit.verticalFlip, edit.filter, edit.contrast, edit.brightness, edit.saturation, source])
 
   const FILTERS = useMemo(() => (
     source && actual === "filter" && <div className="rp-filters">
@@ -165,7 +218,7 @@ const ReactProfile: React.FC<ReactProfileProps> = ({ src, initCrop, cropOptions,
         </div>
       ))}
     </div>
-  ), [actual, edit.horizontalFlip, edit.verticalFlip, edit.filter, edit.brightness, edit.saturation, edit.hue, edit.contrast, source])
+  ), [actual, edit.horizontalFlip, edit.verticalFlip, edit.filter, edit.brightness, edit.saturation, edit.contrast, source])
 
   if(!img) return <></>
 

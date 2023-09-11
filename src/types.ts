@@ -13,7 +13,10 @@ export interface ReactProfileProps {
   onCancel?: () => void;
   onDone?: (editedImage?: EXPORT_OBJECT) => void;
   filtersEnabled?: FILTERS[],
-  experimental?: boolean
+  maxWidth?: number,
+  maxHeight?: number,
+  quality?: number,
+  maxImageSize?: number
 }
 
 export interface Change {
@@ -21,7 +24,6 @@ export interface Change {
   contrast: number;
   crop?: Crop;
   filter?: string | undefined;
-  hue: number;
   saturation: number;
   verticalFlip: boolean;
   horizontalFlip: boolean;
@@ -34,7 +36,6 @@ export interface SendChange {
   contrast?: number;
   crop?: Crop;
   filter?: string | undefined;
-  hue?: number;
   saturation?: number;
   verticalFlip?: boolean;
   horizontalFlip?: boolean;

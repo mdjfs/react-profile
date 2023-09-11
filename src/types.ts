@@ -1,12 +1,9 @@
 
 
 import { ReactCropProps, type Crop } from 'react-image-crop'
-import { EXPORT_OBJECT, FILTERS } from 'react-pixels/dist/types';
+import { EXPORT_OBJECT, FILTERS } from 'react-pixels';
 
 export type MODULES = "crop" | "colors" | "filter"
-
-
-
 
 export interface ReactProfileProps {
   src: string;
@@ -15,7 +12,8 @@ export interface ReactProfileProps {
   square?: boolean;
   onCancel?: () => void;
   onDone?: (editedImage?: EXPORT_OBJECT) => void;
-  filtersEnabled?: FILTERS[]
+  filtersEnabled?: FILTERS[],
+  experimental?: boolean
 }
 
 export interface Change {

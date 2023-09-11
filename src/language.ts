@@ -8,7 +8,6 @@ export const EDITOR_TEXT = {
         sliderBrightness: 'Brightness',
         sliderContrast: 'Contrast',
         sliderSaturation: 'Saturation',
-        sliderHue: 'Hue',
         flipHorizontal: 'Flip horizontal',
         flipVertical: 'Flip vertical',
         noFilter: 'No Filter',

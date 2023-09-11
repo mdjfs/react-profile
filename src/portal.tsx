@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import ReactDOM18 from 'react-dom/client'
 import { ReactProfileProps } from './types';
 import ReactProfile from './ReactProfile';
-import { EXPORT_OBJECT } from 'react-pixels/dist/types';
+import { EXPORT_OBJECT } from 'react-pixels';
 
 export const openEditor = async (props: ReactProfileProps) => {
 

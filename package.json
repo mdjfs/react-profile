@@ -1,6 +1,6 @@
 {
   "name": "react-profile",
-  "version": "0.3.5",
+  "version": "0.5.6",
   "description": "Image Profile Editor",
   "repository": "",
   "author": "Marcos Fuenmayor",
@@ -36,6 +36,6 @@
   },
   "dependencies": {
     "react-image-crop": "^10.1.5",
-    "react-pixels": "^0.3.1"
+    "react-pixels": "^0.5.2"
   }
 }

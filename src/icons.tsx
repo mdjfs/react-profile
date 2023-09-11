@@ -8,14 +8,6 @@ const ICON_SATURATION = (
   </div>
 );
 
-const ICON_HUE = (
-  <div className="icon-hue">
-    <svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 -960 960 960" width="40">
-      <path d="M480.04-161.41q-115.155 0-196.893-79.499-81.737-79.499-81.737-194.236 0-58.445 22.84-106.547 22.839-48.103 59.235-87.319L480-821.513l196.515 192.502q36.396 39.216 59.235 88.535 22.84 49.319 22.84 105.509 0 114.172-81.364 193.865-81.365 79.692-197.186 79.692Zm-.04-32.436v-581.436L305.538-603.987q-35.09 34.192-53.391 76.884-18.301 42.693-18.301 91.808 0 100.411 72.026 170.93Q377.897-193.846 480-193.846Z"/>
-    </svg>
-  </div>
-);
-
 const ICON_CONTRAST = (
   <div className="icon-contrast">
     <svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 -960 960 960" width="40">
@@ -83,7 +75,6 @@ const ICON_FILTER = (
 
 export {
   ICON_SATURATION,
-  ICON_HUE,
   ICON_CONTRAST,
   ICON_BRIGHTNESS,
   ICON_FLIP,

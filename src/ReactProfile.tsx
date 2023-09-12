@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {  Change, MODULES, ReactProfileProps, SendChange  } from './types';
+import {  Change, MODULES, ReactProfileProps, SUPPORTED_LANGUAGES, SendChange  } from './types';
 import { EDITOR_TEXT } from './language';
 import { PixelsImage, getExportObject, getImageSource, EXPORT_OBJECT, FILTERS, PixelsImageSource } from 'react-pixels';
 import ReactCrop, { ReactCropProps, type Crop } from 'react-image-crop'
 import { ICON_BRIGHTNESS, ICON_COLORS, ICON_CONTRAST, ICON_CROP, ICON_FILTER, ICON_FLIP, ICON_SATURATION, ICON_SPINNER, ICON_UNDO } from './icons';
 
-const language = 'en';
+const DEFAULT_LANGUAGE: SUPPORTED_LANGUAGES = 'en';
 
 const INIT_STATE: Change = {
   brightness: 0,
@@ -35,6 +35,8 @@ const LAST_CHANGE_DELAY_MS = 1000;
 
 const DEFAULT_FILTERS_ENABLED: FILTERS[] = ["vintage", "perfume", "sunset", "wood", "greyscale", "coral", "lemon", "haze", "radio", "grime", "red_effect", "rgbSplit"]
 
+const DEFAULT_MODULES: MODULES[] = ["crop", "filter", "colors"];
+
 const ReactProfile: React.FC<ReactProfileProps> = ({ 
   src, 
   initCrop, 
@@ -46,8 +48,11 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
   maxWidth = MAX_IMAGE_WIDTH,
   maxHeight = MAX_IMAGE_HEIGHT,
   maxImageSize = MAX_IMAGE_SIZE,
-  quality = DEFAULT_OPTIMIZE
+  quality = DEFAULT_OPTIMIZE,
+  modules = DEFAULT_MODULES,
+  language = DEFAULT_LANGUAGE
  }) => {
+  const moduleSet = [...new Set(modules)]
 
   INIT_STATE.crop = initCrop || INIT_CROP;
   cropOptions = square ? {...cropOptions, aspect: 1} as ReactCropProps : cropOptions
@@ -55,12 +60,13 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
   const text = EDITOR_TEXT[language]
 
   const [close, setClose] = useState(false);
-  const [actual, setActual] = useState<MODULES>("crop");
+  const [actual, setActual] = useState<MODULES>(moduleSet[0]);
   const [history, setHistory] = useState<Change[]>([INIT_STATE]);
   const [edit, setEdit] = useState<Change>(INIT_STATE);
   const [exportObject, setExportObject] = useState<EXPORT_OBJECT>();
   const [isExporting, setIsExporting] = useState(false);
   const [img, setImg] = useState<HTMLImageElement>();
+  const [croppedSource, setCroppedSource] = useState<PixelsImageSource>();
   const [source, setSource] = useState<PixelsImageSource>();
   const pushHistory = (changes: SendChange) => {
     const last = history[history.length-1];
@@ -90,11 +96,17 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
   const cancel = () => {
     setClose(true);
     if(onCancel) onCancel();
+    else console.warn("ReactProfile: Missing onCancel handler");
   }
 
   const done = async () => {
     if(onDone) {
-      const sendCanvas = getExportObject;
+      setIsExporting(true);
+      const sendCanvas = (canvas: HTMLCanvasElement, type: string) => {
+        setIsExporting(false);
+        setClose(true);
+        onDone(getExportObject(canvas, type))
+      };
 
       try {
          if(edit.crop) {
@@ -124,6 +136,30 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
       } catch (err) {
         console.error("ReactProfile: ", err)
       }
+    } else {
+      setClose(true);
+      console.warn("ReactProfile: Missing onDone handler")
+    }
+  }
+
+  const getCroppedSource = async () => {
+    const cr = edit.crop;
+    if(source && cr) {
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+      if(!context) throw new Error("ReactProfile: Error obtaining context")
+      canvas.width = source.width;
+      canvas.height = source.height;
+      context.putImageData(source.data, 0, 0);
+      const croppedCanvas = document.createElement("canvas");
+      const croppedContext = croppedCanvas.getContext("2d");
+      if(!croppedContext) throw new Error("ReactProfile: Error obtaining context")
+      const width = cr.unit === "%" ? source.width * (cr.width/100) : cr.width;
+      const height = cr.unit === "%" ? source.height * (cr.height/100) : cr.height;
+      croppedCanvas.width = width;
+      croppedCanvas.height = height;
+      croppedContext.drawImage(canvas, cr.x, cr.y, width, height, 0, 0, width, height);
+      return await getImageSource(croppedCanvas, source.type as any)
     }
   }
 
@@ -178,7 +214,7 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
   }, [img]);
 
   const IMAGE = useMemo(() => (
-    source && <PixelsImage src={source} 
+    source && <PixelsImage src={actual === "crop" ? source : croppedSource || source} 
       horizontalFlip={edit.horizontalFlip}
       verticalFlip={edit.verticalFlip}
       filter={edit.filter}
@@ -188,12 +224,12 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
       className="rp-image-preview" 
       onFilter={setExportObject}
     />
-  ), [edit.horizontalFlip, edit.verticalFlip, edit.filter, edit.contrast, edit.brightness, edit.saturation, source])
+  ), [edit.horizontalFlip, edit.verticalFlip, edit.filter, edit.contrast, edit.brightness, edit.saturation, actual, source, croppedSource])
 
   const FILTERS = useMemo(() => (
     source && actual === "filter" && <div className="rp-filters">
       <div className={`rp-filter no-filter ${!edit.filter && "selected"}`} onClick={() => setFilter(undefined)}>
-          <PixelsImage src={source} 
+          <PixelsImage src={croppedSource || source} 
               horizontalFlip={edit.horizontalFlip}
               verticalFlip={edit.verticalFlip}
               saturation={edit.saturation}
@@ -205,7 +241,7 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
         </div>
       {Object.entries(text.filters).filter(([_, filter]) => filtersEnabled.includes(filter as FILTERS)).map(([name, filter]) => (
         <div className={`rp-filter ${filter} ${filter === edit.filter && "selected"}`} key={filter} onClick={() => setFilter(filter)}>
-          <PixelsImage src={source} 
+          <PixelsImage src={croppedSource || source} 
               horizontalFlip={edit.horizontalFlip}
               verticalFlip={edit.verticalFlip}
               filter={filter}
@@ -218,7 +254,7 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
         </div>
       ))}
     </div>
-  ), [actual, edit.horizontalFlip, edit.verticalFlip, edit.filter, edit.brightness, edit.saturation, edit.contrast, source])
+  ), [actual, edit.horizontalFlip, edit.verticalFlip, edit.filter, edit.brightness, edit.saturation, edit.contrast, source, croppedSource])
 
   if(!img) return <></>
 
@@ -231,18 +267,18 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
           <button className="rp-back-button" onClick={undo} disabled={history.length === 1}>{ICON_UNDO}</button>
       </div>
       <div className="rp-buttons">
-        <div className={`rp-button-crop ${actual === "crop" && 'selected'}`} onClick={() => setActual("crop")}>
-          {ICON_CROP}
-          <p>{text.cropButton}</p>
-        </div>
-        <div className={`rp-button-filter ${actual === "filter" && 'selected'}`} onClick={() => setActual("filter")}>
-          {ICON_FILTER}
-          <p>{text.filterButton}</p>
-        </div>
-        <div className={`rp-button-colors ${actual === "colors" && 'selected'}`} onClick={() => setActual("colors")}>
-          {ICON_COLORS}
-          <p>{text.colorsButton}</p>
-        </div>
+        {moduleSet.map(module => 
+          <div key={module} className={`rp-button-crop ${actual === module && 'selected'}`} onClick={async () => {
+            if(actual === "crop") {
+              const source = await getCroppedSource();
+              if(source) setCroppedSource(source);
+            }
+            setActual(module)
+          }}>
+            {module === "crop" ? ICON_CROP : module === "filter" ? ICON_FILTER : ICON_COLORS}
+            <p>{module === "crop" ? text.cropButton : module === "filter" ? text.filterButton : text.colorsButton}</p>
+          </div>
+        )}
       </div>
       <div className="rp-next">
           <button className="rp-done-button" disabled={isExporting} onClick={done}>{isExporting && ICON_SPINNER}{text.doneButton}</button>
@@ -264,8 +300,9 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
                 id="rp-bs"
                 min={-100}
                 max={100}
+                step={1}
                 value={Number((edit.brightness*100).toFixed(0))}
-                onInput={(e) =>  setBrightness(Number(e.currentTarget.value)/100)}
+                onInput={(e) => setBrightness(Number(e.currentTarget.value)/100)}
               />
               <label htmlFor="rp-ct">{ICON_CONTRAST} {text.sliderContrast}</label>
               <input
@@ -273,6 +310,7 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
                 id="rp-ct"
                 min={-100}
                 max={100}
+                step={1}
                 value={Number((edit.contrast*100).toFixed(0))}
                 onInput={(e) => setContrast(Number(e.currentTarget.value)/100)}
               />
@@ -282,6 +320,7 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
                 id="rp-sat"
                 min={-100}
                 max={100}
+                step={1}
                 value={Number((edit.saturation*100).toFixed(0))}
                 onInput={(e) => setSaturation(Number(e.currentTarget.value)/100)}
               />

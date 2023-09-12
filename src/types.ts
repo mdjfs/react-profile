@@ -5,6 +5,8 @@ import { EXPORT_OBJECT, FILTERS } from 'react-pixels';
 
 export type MODULES = "crop" | "colors" | "filter"
 
+export type SUPPORTED_LANGUAGES = "es" | "en" | "zh" | "ja" | "it" | "fr"
+
 export interface ReactProfileProps {
   src: string;
   initCrop?: Crop;
@@ -16,7 +18,9 @@ export interface ReactProfileProps {
   maxWidth?: number,
   maxHeight?: number,
   quality?: number,
-  maxImageSize?: number
+  maxImageSize?: number,
+  modules?: MODULES[],
+  language?: SUPPORTED_LANGUAGES
 }
 
 export interface Change {

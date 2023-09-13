@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Change, MODULES, ReactProfileProps, SUPPORTED_LANGUAGES, SendChange } from "./types";
 import { EDITOR_TEXT } from "./language";
 import { PixelsImage, getExportObject, getImageSource, EXPORT_OBJECT, FILTERS, PixelsImageSource } from "react-pixels";
-import ReactCrop, { ReactCropProps, type Crop } from "react-image-crop";
+import ReactCrop, { ReactCropProps, type Crop, centerCrop, makeAspectCrop } from "react-image-crop";
 import {
   ICON_BRIGHTNESS,
   ICON_COLORS,
@@ -91,6 +91,7 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
   const [img, setImg] = useState<HTMLImageElement>();
   const [croppedSource, setCroppedSource] = useState<PixelsImageSource>();
   const [source, setSource] = useState<PixelsImageSource>();
+  const [cropEdit, setCropEdit] = useState<Crop>(INIT_STATE.crop);
   const pushHistory = (changes: SendChange) => {
     const last = history[history.length - 1];
     const change = { ...edit, ...changes, lastChangeTime: Date.now() };
@@ -104,6 +105,7 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
       history.pop();
       setHistory(history);
       setEdit(history[history.length - 1]);
+      setCropEdit(history[history.length - 1].crop as Crop);
     } else {
       setEdit(history[0]);
     }
@@ -156,45 +158,38 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
   const sourceToCanvas = (source: PixelsImageSource) => {
     if (source) {
       const [canvas, ctx] = createCanvas();
+      canvas.width = source.width;
+      canvas.height = source.height;
       ctx.putImageData(source.data, 0, 0);
       return canvas;
     }
   };
 
+  const hasCrop = (crop?: Crop) => crop && crop.width > 0 && crop.height > 0;
+
   const getCroppedCanvas = (withChanges = false) => {
     const cr = edit.crop;
-    if (cr && exportObject && source) {
-      const imageCanvas = exportObject.getCanvas();
-      const sourceCanvas = sourceToCanvas(source);
-      if (imageCanvas && sourceCanvas) {
-        sourceCanvas.width = imageCanvas.clientWidth;
-        sourceCanvas.height = imageCanvas.clientHeight;
-        imageCanvas.width = imageCanvas.clientWidth;
-        imageCanvas.height = imageCanvas.clientHeight;
+    if (cr && hasCrop(cr) && exportObject && source) {
+      const sourceCanvas = withChanges ? exportObject.getCanvas() : sourceToCanvas(source);
+      if (withChanges && actual !== "crop") return exportObject.getCanvas();
+      if (sourceCanvas) {
         const [croppedCanvas, croppedContext] = createCanvas();
         const width = cr.unit === "%" ? sourceCanvas.width * (cr.width / 100) : cr.width;
         const height = cr.unit === "%" ? sourceCanvas.height * (cr.height / 100) : cr.height;
+        const x = cr.unit === "%" ? sourceCanvas.width * (cr.x / 100) : cr.x;
+        const y = cr.unit === "%" ? sourceCanvas.height * (cr.y / 100) : cr.y;
         croppedCanvas.width = width;
         croppedCanvas.height = height;
-        croppedContext.drawImage(
-          withChanges ? imageCanvas : sourceCanvas,
-          cr.x,
-          cr.y,
-          width,
-          height,
-          0,
-          0,
-          width,
-          height
-        );
+        croppedContext.drawImage(sourceCanvas, x, y, width, height, 0, 0, width, height);
+        return croppedCanvas;
       }
-    } else if (!cr && exportObject && withChanges) return exportObject.getCanvas();
-    else if (!cr && !withChanges && source) return sourceToCanvas(source);
+    } else if (!hasCrop(cr) && exportObject && withChanges) return exportObject.getCanvas();
+    else if (!hasCrop(cr) && !withChanges && source) return sourceToCanvas(source);
   };
 
   const getCroppedSource = async () => {
     if (exportObject) {
-      if (!edit.crop) return source;
+      if (!hasCrop(edit.crop)) return source;
       const canvas = getCroppedCanvas();
       if (canvas) return await getImageSource(canvas, exportObject.getInferedMimetype() || ("image/jpeg" as any));
     }
@@ -237,6 +232,37 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
       };
     }
   }, [src]);
+
+  useEffect(() => {
+    if (actual !== "crop") getCroppedSource().then((s) => s && setCroppedSource(s));
+  }, [edit.crop, actual]);
+
+  useEffect(() => {
+    if(cropOptions && cropOptions.aspect === 1) {
+      if(edit.crop && cropEdit && source && history) {
+        if(source.width !== source.height && history.length === 1) {
+          const newCrop: Crop = centerCrop(
+            makeAspectCrop(
+              {
+                unit: '%',
+                width: 50
+              },
+              1,
+              source.width,
+              source.height
+            ),
+            source.width,
+            source.height
+          )
+          setCropEdit(newCrop)
+          const newEdit = { ...edit, crop: newCrop };
+          history[0] = newEdit;
+          setHistory(history);
+          setEdit(newEdit);
+        }
+      }
+    }
+  }, [source]);
 
   useEffect(() => {
     if (img)
@@ -358,13 +384,7 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
             <div
               key={module}
               className={`rp-button-crop ${actual === module && "selected"}`}
-              onClick={async () => {
-                if (actual === "crop") {
-                  const source = await getCroppedSource();
-                  if (source) setCroppedSource(source);
-                }
-                setActual(module);
-              }}
+              onClick={() => setActual(module)}
             >
               {module === "crop" ? ICON_CROP : module === "filter" ? ICON_FILTER : ICON_COLORS}
               <p>{module === "crop" ? text.cropButton : module === "filter" ? text.filterButton : text.colorsButton}</p>
@@ -437,7 +457,12 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
         <div className="rp-preview">
           {(actual === "filter" || actual === "colors") && IMAGE}
           {actual === "crop" && (
-            <ReactCrop {...cropOptions} crop={edit.crop} onChange={(c) => setCrop(c)}>
+            <ReactCrop
+              {...cropOptions}
+              crop={cropEdit}
+              onChange={(_, c) => setCropEdit(c)}
+              onComplete={(_, c) => setCrop(c)}
+            >
               {IMAGE}
             </ReactCrop>
           )}

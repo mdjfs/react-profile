@@ -3113,10 +3113,10 @@ react-is@^18.0.0:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.2.0.tgz#199431eeaaa2e09f86427efbb4f1473edb47609b"
   integrity sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==
 
-react-pixels@^0.5.7:
-  version "0.5.7"
-  resolved "https://registry.yarnpkg.com/react-pixels/-/react-pixels-0.5.7.tgz#de836c0655b5f00e33146b07ee11cfca290dff6a"
-  integrity sha512-32d2Issoj949yskGoRQC4H143xJPw5ZvG02qaVKdwH44+1CZuBzpupeXc03dhNIFlrj2c3r0ZIRpR/zWc+LPKA==
+react-pixels@^0.5.8:
+  version "0.5.8"
+  resolved "https://registry.yarnpkg.com/react-pixels/-/react-pixels-0.5.8.tgz#2df6e36ebc48c95d826e17c822ffd48809081690"
+  integrity sha512-Vi3IFHnfxPNH/ouB0i5jKMjKgixuTs93fm5lKg7fLPnvw8/0u5+uajYiOPBxUdvsDnOcZFb1dce+ieZg9446fw==
   dependencies:
     node-pixels "^0.0.1"
 

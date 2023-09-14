@@ -1,3 +1,5 @@
 __tests__/
 src/
 node_modules/
+themes/*.src.css
+themes/minify.js

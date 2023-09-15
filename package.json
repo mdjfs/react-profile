@@ -1,15 +1,17 @@
 {
   "name": "react-profile",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "description": "Image Profile Editor",
-  "repository": "",
+  "repository": "https://github.com/mdjfs/react-profile",
+  "homepage": "https://react-profile-page-coral.vercel.app/",
   "author": "Marcos Fuenmayor",
   "license": "Apache-2.0 license",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "node themes/minify.js && tsc",
-    "test": "jest"
+    "test": "jest",
+    "docs": "node docs/getDoc.js"
   },
   "jest": {
     "preset": "ts-jest",

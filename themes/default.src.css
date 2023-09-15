@@ -217,20 +217,20 @@
     height: 100%;
 }
 
-@media screen and (min-width: 800px) {
+@media only screen and (min-width: 800px) {
   /* Styles for smaller screens */
   .rp-image-preview {
     max-height: 360px;
   }
 }
 
-@media screen and (min-width: 1366px) {
+@media only screen and (min-width: 1366px) {
   .rp-image-preview {
     max-height: 450px;
   }
 }
 
-@media screen and (min-width: 1600px) {
+@media only screen and (min-width: 1600px) {
   .rp-preview {
     margin-top: 15px;
   }
@@ -239,7 +239,7 @@
   }
 }
 
-@media screen and (min-width: 1920px) {
+@media only screen and (min-width: 1920px) {
   .rp-preview {
     margin-top: 30px;
   }
@@ -303,7 +303,7 @@
 } 
 
 .rp-editor *::-webkit-scrollbar {
-  width: 3px;
+  width: 0px;
 }
 
 .rp-editor *::-webkit-scrollbar-track {
@@ -417,7 +417,7 @@
 }
 
 
-@media only screen and (max-width: 767px) and (min-resolution: 2dppx) {
+@media only screen and (max-width: 767px) {
   
     .rp-navigation .rp-back {
         margin-left: 5px;

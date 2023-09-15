@@ -233,19 +233,19 @@ canvas{
   height: 100%;
 }
 
-@media screen and (min-width: 800px) {
+@media only screen and (min-width: 800px) {
   .rp-image-preview {
     max-height: 360px;
   }
 }
 
-@media screen and (min-width: 1366px) {
+@media only screen and (min-width: 1366px) {
   .rp-image-preview {
     max-height: 450px;
   }
 }
 
-@media screen and (min-width: 1600px) {
+@media only screen and (min-width: 1600px) {
   .rp-preview {
     margin-top: 15px;
   }
@@ -254,7 +254,7 @@ canvas{
   }
 }
 
-@media screen and (min-width: 1920px) {
+@media only screen and (min-width: 1920px) {
   .rp-preview {
     margin-top: 30px;
   }
@@ -434,7 +434,7 @@ canvas{
   box-shadow: 0 0 0 13px hsla(206, 100%, 52%, 0.24);
 }
 
-@media only screen and (max-width: 767px) and (min-resolution: 2dppx) {
+@media only screen and (max-width: 767px) {
   .rp-navigation .rp-back {
     z-index: 20;
     margin-top: 5px;

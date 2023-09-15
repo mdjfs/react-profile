@@ -74,6 +74,7 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
   quality = DEFAULT_OPTIMIZE,
   modules = DEFAULT_MODULES,
   language = DEFAULT_LANGUAGE,
+  type
 }) => {
   const moduleSet = [...new Set(modules)];
 
@@ -195,41 +196,47 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
     }
   };
 
+  const loadImage = (image: HTMLImageElement, type: string) => {
+    const [canvas, context] = createCanvas();
+    let loadWidth = image.width;
+    let loadHeight = image.height;
+    const aspect = image.width / image.height;
+    if (loadWidth > maxWidth) {
+      loadWidth = maxWidth;
+      loadHeight = loadWidth / aspect;
+    }
+    if (loadHeight > maxHeight) {
+      loadHeight = maxHeight;
+      loadWidth = loadHeight * aspect;
+    }
+    canvas.width = loadWidth;
+    canvas.height = loadHeight;
+    context.drawImage(image, 0, 0, loadWidth, loadHeight);
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) return console.error("ReactProfile: Error loading image");
+        const pixelImage = new Image();
+        pixelImage.src = URL.createObjectURL(blob);
+        pixelImage.onload = () => setImg(pixelImage);
+        pixelImage.onerror = () => console.error("ReactProfile: Error loading image");
+      },
+      type,
+      quality
+    );
+  }
+
   useEffect(() => {
     if (src) {
-      const png = src.includes("png");
-      const [canvas, context] = createCanvas();
-      const image = new Image();
-      image.crossOrigin = "anonymous";
-      image.src = src;
-      image.onerror = () => console.error("ReactProfile: Error fetching image");
-      image.onload = () => {
-        let loadWidth = image.width;
-        let loadHeight = image.height;
-        const aspect = image.width / image.height;
-        if (loadWidth > maxWidth) {
-          loadWidth = maxWidth;
-          loadHeight = loadWidth / aspect;
-        }
-        if (loadHeight > maxHeight) {
-          loadHeight = maxHeight;
-          loadWidth = loadHeight * aspect;
-        }
-        canvas.width = loadWidth;
-        canvas.height = loadHeight;
-        context.drawImage(image, 0, 0, loadWidth, loadHeight);
-        canvas.toBlob(
-          (blob) => {
-            if (!blob) return console.error("ReactProfile: Error loading image");
-            const pixelImage = new Image();
-            pixelImage.src = URL.createObjectURL(blob);
-            pixelImage.onload = () => setImg(pixelImage);
-            pixelImage.onerror = () => console.error("ReactProfile: Error loading image");
-          },
-          png ? "image/png" : "image/jpeg",
-          quality
-        );
-      };
+      if(typeof src === "string") {
+        const png = src.includes("png");
+        const image = new Image();
+        image.crossOrigin = "anonymous";
+        image.src = src;
+        image.onerror = () => console.error("ReactProfile: Error fetching image");
+        image.onload = () => loadImage(image, type || png ? 'image/png' : 'image/jpeg')
+      } else if (src instanceof HTMLImageElement) {
+        loadImage(src, type || 'image/jpeg')
+      }
     }
   }, [src]);
 

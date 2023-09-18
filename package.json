@@ -1,6 +1,6 @@
 {
   "name": "react-profile",
-  "version": "0.9.9",
+  "version": "0.9.99",
   "description": "Image Profile Editor",
   "repository": "https://github.com/mdjfs/react-profile",
   "homepage": "https://react-profile-page-coral.vercel.app/",
@@ -62,6 +62,9 @@
     "flip image horizontal",
     "horizontal",
     "flip image vertical",
-    "vertical"
+    "vertical",
+    "editor",
+    "avatar",
+    "canvas"
   ]
 }

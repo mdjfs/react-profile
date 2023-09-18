@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 
-canvas{
+canvas {
   transition: all 0.2s;
 }
 
@@ -14,8 +14,9 @@ canvas{
   color: #dcdddf;
 }
 
-.rp-editor .rp-buttons svg, .rp-editor .rp-controls svg {
-    fill: #dcdddf;
+.rp-editor .rp-buttons svg,
+.rp-editor .rp-controls svg {
+  fill: #dcdddf;
 }
 
 .rp-editor {
@@ -73,7 +74,7 @@ canvas{
 }
 
 .rp-navigation .rp-back .rp-back-button:hover {
-    background-color: #1a1a1aa2;
+  background-color: #1a1a1aa2;
 }
 
 .rp-navigation .rp-back .rp-back-button svg {
@@ -182,10 +183,7 @@ canvas{
   transition: all 0.2s;
 }
 
-.rp-image-section.crop
-  .rp-controls
-  .rp-crop.vertical-flip
-  .flip-vertical-button::before {
+.rp-image-section.crop .rp-controls .rp-crop.vertical-flip .flip-vertical-button::before {
   content: " ";
   width: 3px;
   height: 3px;
@@ -194,10 +192,7 @@ canvas{
   margin-right: 5px;
 }
 
-.rp-image-section.crop
-  .rp-controls
-  .rp-crop.horizontal-flip
-  .flip-horizontal-button::before {
+.rp-image-section.crop .rp-controls .rp-crop.horizontal-flip .flip-horizontal-button::before {
   content: " ";
   width: 3px;
   height: 3px;
@@ -212,7 +207,7 @@ canvas{
   height: 30px;
 }
 
-.rp-image-section.crop .rp-controls .rp-crop .flip-horizontal-button svg {
+.rp-image-section.crop .rp-controls .rp-crop .flip-vertical-button svg {
   transform: rotateZ(-90deg);
 }
 
@@ -509,7 +504,6 @@ canvas{
   .rp-image-section.crop .rp-preview {
     height: 500px;
   }
-
 
   .rp-image-section.crop .rp-controls .rp-crop > button {
     font-size: 10px;
@@ -835,7 +829,6 @@ canvas{
   display: none;
 }
 @media (pointer: coarse) {
-
   /*.ReactCrop__drag-handle {
     width: 354px;
     height: 354px;

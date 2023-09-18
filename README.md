@@ -4,7 +4,11 @@
 
 [![npm version](https://badge.fury.io/js/react-profile.svg)](https://www.npmjs.com/package/react-profile)
 
-A simple and open-source React component for editing photos
+A simple and open-source React component for editing photos.
+
+[Demo](https://react-profile-page-coral.vercel.app/demo)
+
+[Homepage](https://react-profile-page-coral.vercel.app/)
 
 ## Table of Contents
 

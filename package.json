@@ -1,6 +1,6 @@
 {
   "name": "react-profile",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "description": "Image Profile Editor",
   "repository": "https://github.com/mdjfs/react-profile",
   "homepage": "https://react-profile-page-coral.vercel.app/",
@@ -41,5 +41,27 @@
   "dependencies": {
     "react-image-crop": "^10.1.5",
     "react-pixels": "^0.5.8"
-  }
+  },
+  "keywords": [
+    "react",
+    "profile",
+    "image",
+    "image editor",
+    "image crop",
+    "crop image",
+    "image filter",
+    "filter image",
+    "filter",
+    "adjust",
+    "brightness",
+    "saturation",
+    "contrast",
+    "crop",
+    "flip",
+    "flip image",
+    "flip image horizontal",
+    "horizontal",
+    "flip image vertical",
+    "vertical"
+  ]
 }

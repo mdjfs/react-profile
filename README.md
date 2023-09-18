@@ -2,7 +2,7 @@
 
 # React Profile
 
-[![npm version](https://badge.fury.io/js/react-profile.svg)](https://badge.fury.io/js/react-profile)
+[![npm version](https://badge.fury.io/js/react-profile.svg)](https://www.npmjs.com/package/react-profile)
 
 A simple and open-source React component for editing photos
 

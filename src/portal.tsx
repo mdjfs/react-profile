@@ -5,7 +5,7 @@ import { ReactProfileProps } from './types';
 import ReactProfile from './ReactProfile';
 import { EXPORT_OBJECT } from 'react-pixels';
 
-export const openEditor = async (props: ReactProfileProps) => {
+export const openEditor = async (props: ReactProfileProps | (string | HTMLImageElement | File)) => {
 
   return await new Promise<{ done: boolean, cancel: boolean, editedImage?: EXPORT_OBJECT }>((resolve, reject) => {
     try {
@@ -29,6 +29,8 @@ export const openEditor = async (props: ReactProfileProps) => {
         ReactDOM.unmountComponentAtNode(root);
         root.remove();
       };
+
+      if(typeof props !== 'object') props = { src: props }
 
       if(Number(reactVersion) >= 18 && ReactDOM18.createRoot) {
         const reactRoot = ReactDOM18.createRoot(root);

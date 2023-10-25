@@ -1,7 +1,7 @@
-const path = require('path');
-const fs = require("fs");
-const postcss = require("postcss");
-const cssnano = require("cssnano");
+import path from "path"
+import fs from "fs"
+import postcss from "postcss"
+import cssnano from "cssnano"
 
 function minify(cssPath)  {
     const basename = path.basename(cssPath);

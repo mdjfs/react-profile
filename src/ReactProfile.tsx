@@ -479,8 +479,8 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
             <ReactCrop
               {...cropOptions}
               crop={cropEdit}
-              onChange={(_, c) => setCropEdit(c)}
-              onComplete={(_, c) => setCrop(c)}
+              onChange={(_: any, c: any) => setCropEdit(c)}
+              onComplete={(_: any, c: any) => setCrop(c)}
             >
               {IMAGE}
             </ReactCrop>

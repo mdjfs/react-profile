@@ -8,7 +8,7 @@ export type MODULES = "crop" | "colors" | "filter"
 export type SUPPORTED_LANGUAGES = "es" | "en" | "zh" | "ja" | "it" | "fr" | "hin"
 
 export interface ReactProfileProps {
-  src: string | HTMLImageElement;
+  src: string | File | HTMLImageElement;
   initCrop?: Crop;
   cropOptions?: Omit<ReactCropProps, 'onChange'>;
   square?: boolean;

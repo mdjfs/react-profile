@@ -175,7 +175,7 @@ export default App;
 
 ## Props
 
-**`src?: string | HTMLImageObject`**
+**`src?: string | File | HTMLImageObject`**
 
 Source of the image
 

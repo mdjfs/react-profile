@@ -236,6 +236,18 @@ const ReactProfile: React.FC<ReactProfileProps> = ({
         image.onload = () => loadImage(image, type || png ? 'image/png' : 'image/jpeg')
       } else if (src instanceof HTMLImageElement) {
         loadImage(src, type || 'image/jpeg')
+      } else if (src instanceof File) {
+        if(src.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                if(e.target) {
+                    img.src = e.target.result as any;
+                    img.onload = () => loadImage(img, src.type);
+                }
+            }
+            reader.readAsDataURL(src)
+        }
       }
     }
   }, [src]);

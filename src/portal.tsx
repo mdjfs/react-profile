@@ -30,7 +30,7 @@ export const openEditor = async (props: ReactProfileProps | (string | HTMLImageE
         root.remove();
       };
 
-      if(typeof props !== 'object') props = { src: props }
+      if(typeof props === 'string' || props instanceof HTMLImageElement || props instanceof File) props = { src: props }
 
       if(Number(reactVersion) >= 18 && ReactDOM18.createRoot) {
         const reactRoot = ReactDOM18.createRoot(root);

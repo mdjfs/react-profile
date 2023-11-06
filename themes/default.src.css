@@ -1,5 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 
+.rp-root {
+  position: absolute;
+  z-index: 99;
+}
+
 :root {
   --rp-background: #f1f2f3;
 }

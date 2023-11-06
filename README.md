@@ -219,7 +219,7 @@ Image quality for optimization purposes. Default is '0.8'. Only affects JPEG for
 
 **`maxImageSize?: number`**
 
-Maximum image size in bytes. The default maximum size is '5MB' (1024 \* 1024 \* 5). If you want to work with larger images, you should specify it here. Note: Working with very large images can overload the canvas object and may cause the editor to fail.
+Maximum image size in bytes. The default maximum size is '10MB' (1024 \* 1024 \* 10). If you want to work with larger images, you should specify it here. Note: Working with very large images can overload the canvas object and may cause the editor to fail.
 
 **`modules?: MODULES[]`**
 

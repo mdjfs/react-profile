@@ -39,7 +39,7 @@ const INIT_CROP: Crop = {
 const MAX_IMAGE_WIDTH = 1000;
 const MAX_IMAGE_HEIGHT = 1000;
 const DEFAULT_OPTIMIZE = 0.8;
-const MAX_IMAGE_SIZE = 1024 * 1024 * 5; // 5MB
+const MAX_IMAGE_SIZE = 1024 * 1024 * 10; // 10MB
 
 const LAST_CHANGE_DELAY_MS = 1000;
 

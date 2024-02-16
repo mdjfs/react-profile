@@ -1,9 +1,9 @@
 {
   "name": "react-profile",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "React Profile Editor, crop, upload, apply filters and adjust colors for your avatar image. Optimize the image size for your application",
   "repository": "https://github.com/mdjfs/react-profile",
-  "homepage": "https://react-profile-edit.vercel.app/",
+  "homepage": "https://react-image-editor.com",
   "author": "Marcos Fuenmayor",
   "license": "Apache-2.0 license",
   "main": "dist/index.js",
